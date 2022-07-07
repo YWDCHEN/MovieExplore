@@ -1,387 +1,207 @@
-import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Button from '@material-ui/core/Button';
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+/*
 
-function Alert(props) {
-    return <MuiAlert elevation={6} variant="filled" {...props} />;
+MSci 245 - Test 1
+
+********* This test contains 4 questions, listed below. ***********
+
+Q1. Turn products list into a stateful list.
+
+Q2. Create "inStock" stateful variable of type Boolean, and set it to true by default.
+
+Q3. Using ternary operator for conditional rendering, display only those products that are in stock. 
+    Use "inStock" stateful variable to perform conditional rendering.
+
+Q4. Complete the function "handleDiscountedProducts" that toggles between two modes: "Show discounted products only" 
+    and "Show all products", in response to the user checking/unckecking the checkbox "DiscountCheckBox".
+
+*/
+
+import * as React from 'react';
+import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
+import Checkbox from '@material-ui/core/Checkbox';
+
+const App = () => {
+
+  const products = [
+    {
+      id: 1,
+      title: 'Gala apple',
+      category: 'fruit',
+      price: 1.20,
+      discount: true,
+      discountAmount: "20%",
+      inStock: true
+    },
+    {
+      id: 2,
+      title: 'Green pepper',
+      category: 'vegetable',
+      price: 2.30,
+      discount: true,
+      discountAmount: "10%",
+      inStock: false
+    },
+    {
+      id: 3,
+      title: 'Whole-wheat tortilla',
+      category: 'bread',
+      price: 3.20,
+      discount: false,
+      discountAmount: "20%",
+      inStock: true
+    },
+    {
+      id: 4,
+      title: 'Sesame bagel',
+      category: 'bread',
+      price: 1.05,
+      discount: true,
+      discountAmount: "10%",
+      inStock: false
+    },
+    {
+      id: 3,
+      title: 'Fruit yoghurt',
+      category: 'dairy',
+      price: 4.30,
+      discount: false,
+      discountAmount: "10%",
+      inStock: true
+    },
+    {
+      id: 4,
+      title: 'Cheddar cheese',
+      category: 'dairy',
+      price: 5.00,
+      discount: true,
+      discountAmount: "10%",
+      inStock: true
+    },
+  ];
+
+  const [product,setproduct] = React.useState(products);
+  var inStock = 'true';
+
+  const handleProductsChange = (item) => {
+    var productsinstock = [];
+    for(var i=0;i<product.length;i++){
+      if(item.discount==inStock){
+        var inStockproduct = product[i];
+      }
+      for(var j=0;j<inStockproduct.length;i++){
+        productsinstock.push(inStockproduct[j]);
+      }
+    }
+  }
+  
+  const handleDiscountedProducts = (item) => {
+
+    if(product.includes(item.id)){
+      var index = product.indexOf(item.id);
+      var productsCopy2 = [...product];
+      if(product.discount=='false'){
+        productsCopy2.splice(index,1);
+        setproduct(productsCopy2);
+      }else{
+        setproduct(productsCopy2);
+      }
+      console.log('Products:',product);
+    }else{
+      var productsCopy2 = [...product];
+      productsCopy2.push(item.id);
+      setproduct(productsCopy2);
+      console.log('Products:',product);
+    }
+  }
+
+  return (
+    <Grid
+      container
+      spacing={1}
+      style={{ maxWidth: '50%', margin: 20 }}
+      direction="column"
+      justify="flex-start"
+      alignItems="stretch"
+    >
+      <Typography variant="h3" gutterBottom component="div">
+        Online Grocery Store
+      </Typography>
+
+      <DiscountCheckBox
+        onCheck={handleDiscountedProducts}
+      />
+
+      <List
+        list={products}
+      />
+
+    </Grid>
+  );
 }
 
-class Home extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
 
-    componentDidMount() {
-    }
+const DiscountCheckBox = ({ onCheck }) => {
 
-    render() {
+  const handleChange = (event) => {
+    onCheck(event.target.checked);
+  };
+
+  return (
+    <div>
+      Show discounted products only
+      <Checkbox
+        onChange={handleChange}
+      />
+      <hr />
+    </div>
+  );
+}
+
+const List = ({ list }) => {
+  return (
+    <>
+      {list.map((item) => {
         return (
-            <div>
-                <Review />
-            </div>
-        )
-    }
+          <>
 
+              <Item
+                item={item}
+              />
+
+          </>
+        );
+      })}
+    </>
+
+  )
 }
 
-class Review extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            selectedMovie: "",
-            enteredTitle: "",
-            enteredReview: "",
-            selectedRating: 0,
-            open1: false,
-            open2: false,
-            open3: false,
-            open4: false,
-            open5: false
-        }
-        this.updateSelectedMovie = this.updateSelectedMovie.bind(this)
-        this.updateEnteredTitle = this.updateEnteredTitle.bind(this)
-        this.updateEnteredReview = this.updateEnteredReview.bind(this)
-        this.updateSelectedRating = this.updateSelectedRating.bind(this)
-        this.handleSubmit = this.handleSubmit.bind(this)
-        this.handleClose1 = this.handleClose1.bind(this)
-        this.handleClose2 = this.handleClose2.bind(this)
-        this.handleClose3 = this.handleClose3.bind(this)
-        this.handleClose4 = this.handleClose4.bind(this)
-        this.handleClose5 = this.handleClose5.bind(this)
-    }
+const Item = ({ item }) => {
 
-    componentDidMount() {
-    }
 
-    updateSelectedMovie(movie) {
-        this.setState({
-            selectedMovie: movie
-        })
-    }
-
-    updateEnteredTitle(title) {
-        this.setState({
-            enteredTitle: title
-        })
-    }
-
-    updateEnteredReview(review) {
-        this.setState({
-            enteredReview: review
-        })
-    }
-
-    updateSelectedRating(rating) {
-        this.setState({
-            selectedRating: rating
-        })
-    }
-
-    handleSubmit() {
-        console.log(this.state)
-        if (!this.state.selectedMovie || this.state.selectedMovie === "") {
-            this.setState({
-                open1: true
-            })
-        } else if (!this.state.enteredTitle || this.state.enteredTitle === "") {
-            this.setState({
-                open2: true
-            })
-        } else if (!this.state.enteredReview || this.state.enteredReview === "") {
-            this.setState({
-                open3: true
-            })
-        } else if (!this.state.selectedRating || this.state.selectedRating === "") {
-            this.setState({
-                open4: true
-            })
-        } else {
-            this.setState({
-                open5: true
-            })
-        }
-    }
-
-    handleClose1() {
-        this.setState({
-            open1: false
-        })
-    }
-
-    handleClose2() {
-        this.setState({
-            open2: false
-        })
-    }
-
-    handleClose3() {
-        this.setState({
-            open3: false
-        })
-    }
-
-    handleClose4() {
-        this.setState({
-            open4: false
-        })
-    }
-
-    handleClose5() {
-        this.setState({
-            open5: false
-        })
-    }
-
-    render() {
-        return (
-            <div>
-                <Grid container spacing={3}>
-                    <Grid item xs={12}>
-                        <Typography variant="h3" component="h3" gutterBottom>
-                            Movie Review Application
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={2}>
-                    </Grid>
-                    <Grid item xs={8}>
-                        <MovieSelection updateSelectedMovie={this.updateSelectedMovie} />
-                        <ReviewTitle updateEnteredTitle={this.updateEnteredTitle} />
-                        <ReviewBody updateEnteredReview={this.updateEnteredReview} />
-                        <ReviewRating updateSelectedRating={this.updateSelectedRating} />
-                    </Grid>
-                    <Grid item xs={2}>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Button variant="contained" color="primary" onClick={this.handleSubmit}>
-                            Submit
-                        </Button>
-                    </Grid>
-                </Grid>
-                <Snackbar open={this.state.open1} autoHideDuration={6000} onClose={this.handleClose1} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-                    <Alert onClose={this.handleClose1} severity="error">
-                        Please select a movie!
-                    </Alert>
-                </Snackbar>
-                <Snackbar open={this.state.open2} autoHideDuration={6000} onClose={this.handleClose2} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-                    <Alert onClose={this.handleClose2} severity="error">
-                        Please enter your review title!
-                    </Alert>
-                </Snackbar>
-                <Snackbar open={this.state.open3} autoHideDuration={6000} onClose={this.handleClose3} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-                    <Alert onClose={this.handleClose3} severity="error">
-                        Please enter your review!
-                    </Alert>
-                </Snackbar>
-                <Snackbar open={this.state.open4} autoHideDuration={6000} onClose={this.handleClose4} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-                    <Alert onClose={this.handleClose4} severity="error">
-                        Please select the rating!
-                    </Alert>
-                </Snackbar>
-                <Snackbar open={this.state.open5} autoHideDuration={6000} onClose={this.handleClose5} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-                    <Alert onClose={this.handleClose5} severity="success">
-                        Your review has been received!<br/>
-                        {this.state.selectedMovie}<br/>
-                        {this.state.enteredTitle}<br/>
-                        {this.state.enteredReview}<br/>
-                        {this.state.selectedRating}<br/>
-                    </Alert>
-                </Snackbar>
-            </div>
-        )
-    }
-
+  return (
+    <>
+      <Grid item>
+        <Typography variant="h6" gutterBottom component="div">
+          {item.title}
+        </Typography>
+        <Typography variant="body1" gutterBottom component="div">
+          {"Category: " + item.category}
+        </Typography>
+        <Typography variant="body1" gutterBottom component="div">
+          {"Price: $" + item.price}
+        </Typography>
+        <Typography variant="body1" gutterBottom component="div">
+          {"Discount: " + item.discount}
+        </Typography>
+        <Typography variant="body1" gutterBottom component="div">
+          {"Discount Percentage: " + item.discountAmount}
+        </Typography>
+      </Grid>
+    </>
+  )
 }
 
-class MovieSelection extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            selectedMovie: ""
-        }
-        this.handleSelectMovie = this.handleSelectMovie.bind(this)
-    }
 
-    componentDidMount() {
-    }
-
-    handleSelectMovie(e) {
-        console.log(e)
-        this.setState({
-            selectedMovie: e.target.value
-        })
-        this.props.updateSelectedMovie(e.target.value);
-    }
-
-    render() {
-        return (
-            <div>
-                <FormControl variant="outlined">
-                    <InputLabel id="movie-title-select-label">Select a movie</InputLabel>
-                    <Select
-                        labelId="movie-title-select-label"
-                        id="movie-title-select"
-                        value={this.state.selectedMovie}
-                        onChange={this.handleSelectMovie}
-                        style={{ width: '180px' }}
-                        label="Select Movie Title"
-                    >
-                        <MenuItem value={"Forrest Gump"}>Forrest Gump</MenuItem>
-                        <MenuItem value={"12 Angry Men"}>12 Angry Men</MenuItem>
-                        <MenuItem value={"Pulp Fiction"}>Pulp Fiction</MenuItem>
-                        <MenuItem value={"Fight Club"}>Fight Club</MenuItem>
-                        <MenuItem value={"Inception"}>Inception</MenuItem>
-                    </Select>
-                </FormControl>
-
-            </div>
-        )
-    }
-
-}
-
-class ReviewTitle extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            enteredTitle: ""
-        }
-        this.handleInputTitle = this.handleInputTitle.bind(this)
-    }
-
-    componentDidMount() {
-    }
-
-    handleInputTitle(e) {
-        this.setState({
-            enteredTitle: e.target.value
-        })
-        this.props.updateEnteredTitle(e.target.value)
-    }
-
-    render() {
-        return (
-            <div style={{ margin: '20px' }}>
-                <InputLabel id="review-title-label">Input the title</InputLabel>
-                <TextField required id="reviewtitle" label="Input the title" variant="outlined" value={this.state.enteredTitle} onChange={this.handleInputTitle} />
-            </div>
-        )
-    }
-
-}
-
-class ReviewBody extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            enteredReview: ""
-        }
-        this.handleInputContent = this.handleInputContent.bind(this)
-    }
-
-    componentDidMount() {
-    }
-
-    handleInputContent(e) {
-        this.setState({
-            enteredReview: e.target.value
-        })
-        this.props.updateEnteredReview(e.target.value)
-    }
-
-    render() {
-        return (
-            <div>
-                <InputLabel id="review-content-label">Input the review content</InputLabel>
-                <TextField
-                    id="standard-multiline-static"
-                    label="Input the review content"
-                    multiline
-                    rows={3}
-                    style={{ width: '240px' }}
-                    variant="outlined"
-                    value={this.state.enteredReview}
-                    onChange={this.handleInputContent}
-                />
-            </div>
-        )
-    }
-
-}
-
-class ReviewRating extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            selectedRating: '0'
-        }
-        this.handleSelectRating = this.handleSelectRating.bind(this)
-    }
-
-    componentDidMount() {
-    }
-
-    handleSelectRating(e) {
-        this.setState({
-            selectedRating: e.target.value
-        })
-        this.props.updateSelectedRating(e.target.value)
-    }
-
-    render() {
-        return (
-            <div>
-                <FormControl variant="outlined" style={{ marginTop: '20px' }}>
-                    <FormLabel component="legend">Rate the movie</FormLabel>
-                    <RadioGroup row aria-label="position" name="position" defaultValue="top" onChange={this.handleSelectRating} value={this.state.selectedRating}>
-                        <FormControlLabel
-                            value="1"
-                            control={<Radio color="primary" />}
-                            label="1"
-                            labelPlacement="top"
-                        />
-                        <FormControlLabel
-                            value="2"
-                            control={<Radio color="primary" />}
-                            label="2"
-                            labelPlacement="top"
-                        />
-                        <FormControlLabel
-                            value="3"
-                            control={<Radio color="primary" />}
-                            label="3"
-                            labelPlacement="top"
-                        />
-                        <FormControlLabel
-                            value="4"
-                            control={<Radio color="primary" />}
-                            label="4"
-                            labelPlacement="top"
-                        />
-                        <FormControlLabel
-                            value="5"
-                            control={<Radio color="primary" />}
-                            label="5"
-                            labelPlacement="top"
-                        />
-                    </RadioGroup>
-                </FormControl>
-            </div>
-        )
-    }
-
-}
-
-export default Home;
+export default App;
