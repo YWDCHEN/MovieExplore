@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import Rating from '@material-ui/lab/Rating';
 
-const serverURL = "http://ec2-18-188-101-79.us-east-2.compute.amazonaws.com:3002";
+const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3002";
 
 function Home() {
   const [movies, setMovies] = React.useState([]);
