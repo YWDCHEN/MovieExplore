@@ -1,172 +1,103 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import CssBaseline from "@material-ui/core/CssBaseline";
-import { MuiThemeProvider, createTheme } from "@material-ui/core/styles";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
+import React, {useEffect, useState} from 'react';
+import {
+  Card,
+  Typography,
+  Box,
+  Container,
+  Button,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  TextField,
+} from '@material-ui/core';
+import Rating from '@material-ui/lab/Rating';
 
+const serverURL = "http://ec2-18-188-101-79.us-east-2.compute.amazonaws.com:3002";
 
-//Dev mode
-const serverURL = ""; //enable for dev mode
-
-//Deployment mode instructions
-//const serverURL = "http://ov-research-4.uwaterloo.ca:PORT"; //enable for deployed mode; Change PORT to the port number given to you;
-//To find your port number: 
-//ssh to ov-research-4.uwaterloo.ca and run the following command: 
-//env | grep "PORT"
-//copy the number only and paste it in the serverURL in place of PORT, e.g.: const serverURL = "http://ov-research-4.uwaterloo.ca:3000";
-
-const fetch = require("node-fetch");
-
-const opacityValue = 0.9;
-
-const theme = createTheme({
-  palette: {
-    type: 'dark',
-    background: {
-      default: "#000000"
-    },
-    primary: {
-      main: "#52f1ff",
-    },
-    secondary: {
-      main: "#b552f7",
-    },
-  },
-});
-
-const styles = theme => ({
-  root: {
-    body: {
-      backgroundColor: "#000000",
-      opacity: opacityValue,
-      overflow: "hidden",
-    },
-  },
-  mainMessage: {
-    opacity: opacityValue,
-  },
-
-  mainMessageContainer: {
-    marginTop: "20vh",
-    marginLeft: theme.spacing(20),
-    [theme.breakpoints.down('xs')]: {
-      marginLeft: theme.spacing(4),
-    },
-  },
-  paper: {
-    overflow: "hidden",
-  },
-  message: {
-    opacity: opacityValue,
-    maxWidth: 250,
-    paddingBottom: theme.spacing(2),
-  },
-
-});
-
-
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      userID: 1,
-      mode: 0
-    }
-  };
-
-  componentDidMount() {
-    //this.loadUserSettings();
+function Home() {
+  const [movies, setMovies] = React.useState([]);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [movie_id, setMovieID] = useState('');
+  const [score, setScore] = useState(4);
+  const [email, setEmail] = useState('');
+  useEffect(() => {
+    fetch(`/api/movies`)
+      .then(res => res.json())
+      .then(data => {
+        setMovies(data);
+      })
+  }, []);
+  const renderMovies = () => {
+    return movies.map(movie => {
+      return (
+        <MenuItem key={movie.id} value={movie.movieID}>{movie.name}</MenuItem>
+      )
+    })
   }
-
-
-  loadUserSettings() {
-    this.callApiLoadUserSettings()
-      .then(res => {
-        //console.log("loadUserSettings returned: ", res)
-        var parsed = JSON.parse(res.express);
-        console.log("loadUserSettings parsed: ", parsed[0].mode)
-        this.setState({ mode: parsed[0].mode });
-      });
-  }
-
-  callApiLoadUserSettings = async () => {
-    const url = serverURL + "/api/loadUserSettings";
-
-    const response = await fetch(url, {
-      method: "POST",
+  const handleReview = (e) => {
+    e.preventDefault();
+    fetch(`/api/reviews`, {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        //authorization: `Bearer ${this.state.token}`
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        userID: this.state.userID
+        user_id: localStorage.getItem('token'),
+        title: title,
+        content,
+        movie_id,
+        score,
+        email
       })
-    });
-    const body = await response.json();
-    if (response.status !== 200) throw Error(body.message);
-    console.log("User settings: ", body);
-    return body;
+    }).then(res => {
+      if (res.status === 200) {
+        alert('Success to Review!');
+      }
+      if (res.status === 500) {
+        alert('User not exists!');
+      }
+    })
   }
-
-  render() {
-    const { classes } = this.props;
-
-
-
-    const mainMessage = (
-      <Grid
-        container
-        spacing={0}
-        direction="column"
-        justify="flex-start"
-        alignItems="flex-start"
-        style={{ minHeight: '100vh' }}
-        className={classes.mainMessageContainer}
-      >
-        <Grid item>
-
-          <Typography
-            variant={"h3"}
-            className={classes.mainMessage}
-            align="flex-start"
+  return (
+    <Container style={{display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '40px'}}>
+      <Typography variant={'h3'}>Movie Review Application</Typography>
+      <Box width={'50%'}>
+        <FormControl fullWidth variant="standard" sx={{ m: 1, minWidth: 120 }}>
+          <InputLabel id="demo-simple-select-standard-label">Select a movie</InputLabel>
+          <Select
+            required
+            value={movie_id}
+            onChange={e => {
+              setMovieID(e.target.value)
+            }}
+            labelId="demo-simple-select-standard-label"
+            id="demo-simple-select-standard"
+            label="Age"
           >
-            {this.state.mode === 0 ? (
-              <React.Fragment>
-                Welcome to MiuMiu!
-              </React.Fragment>
-            ) : (
-              <React.Fragment>
-                Welcome back!
-              </React.Fragment>
-            )}
-          </Typography>
-
-        </Grid>
-      </Grid>
-    )
-
-
-    return (
-      <MuiThemeProvider theme={theme}>
-        <div className={classes.root}>
-          <CssBaseline />
-          <Paper
-            className={classes.paper}
-          >
-            {mainMessage}
-          </Paper>
-
-        </div>
-      </MuiThemeProvider>
-    );
-  }
+            {renderMovies()}
+          </Select>
+        </FormControl>
+      </Box>
+      <form style={{width: '50%'}} onSubmit={handleReview}>
+        <TextField required value={email} onChange={e => setEmail(e.target.value)}
+                   fullWidth  style={{marginTop: '20px'}} placeholder={'Enter your email'} type={'email'}/>
+        <TextField required value={title} onChange={e => setTitle(e.target.value)} fullWidth placeholder={'Enter review title here'} style={{marginTop: '20px'}} />
+        <TextField required value={content} onChange={e => setContent(e.target.value)} multiline rows={4} variant={'outlined'} fullWidth placeholder={'Enter review content here'} style={{marginTop: '20px'}} />
+        <Box flex={1} marginTop={'30px'} alignItems={'center'}>
+          <span>Rating: </span>
+          <Rating
+            value={score}
+            onChange={(e, newVal) => {
+              setScore(newVal)
+            }}
+            name="simple-controlled"
+          />
+        </Box>
+        <Button type={'submit'} style={{marginTop: '40px'}} variant={'contained'} color={'primary'}>Send</Button>
+      </form>
+    </Container>
+  )
 }
-
-Home.propTypes = {
-  classes: PropTypes.object.isRequired
-};
-
-export default withStyles(styles)(Home);
+export default Home;
