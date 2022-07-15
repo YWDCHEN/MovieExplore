@@ -13,7 +13,7 @@ import {
 } from '@material-ui/core';
 import Rating from '@material-ui/lab/Rating';
 
-const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3002";
+const serverURL = "http://ec2-18-216-101-119.us-east-2.compute.amazonaws.com:3002"
 
 function Home() {
   const [movies, setMovies] = React.useState([]);
@@ -48,8 +48,7 @@ function Home() {
         title: title,
         content,
         movie_id,
-        score,
-        email
+        score
       })
     }).then(res => {
       if (res.status === 200) {
@@ -81,8 +80,6 @@ function Home() {
         </FormControl>
       </Box>
       <form style={{width: '50%'}} onSubmit={handleReview}>
-        <TextField required value={email} onChange={e => setEmail(e.target.value)}
-                   fullWidth  style={{marginTop: '20px'}} placeholder={'Enter your email'} type={'email'}/>
         <TextField required value={title} onChange={e => setTitle(e.target.value)} fullWidth placeholder={'Enter review title here'} style={{marginTop: '20px'}} />
         <TextField required value={content} onChange={e => setContent(e.target.value)} multiline rows={4} variant={'outlined'} fullWidth placeholder={'Enter review content here'} style={{marginTop: '20px'}} />
         <Box flex={1} marginTop={'30px'} alignItems={'center'}>
