@@ -55,7 +55,7 @@ function Home() {
         alert('Success to Review!');
       }
       if (res.status === 500) {
-        alert('User not exists!');
+        alert('Server Error!');
       }
     })
   }
