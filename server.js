@@ -14,23 +14,16 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 app.use(express.static(path.join(__dirname, "client/build")));
 
 app.post('/api/reviews', async (req, res) => {
-	const {title, content, score, movie_id, email} = req.body;
+	const {title, content, score, movie_id} = req.body;
 	let connection = mysql.createConnection(config);
-	let sql = `SELECT * FROM user WHERE email=?`;
-	connection.query(sql, [email], (err, results) => {
-		let user_id = 0
-		if (results.length > 0) {
-			user_id = results[0].userID;
-		}
-		sql = `INSERT INTO review(reviewTitle, reviewContent, reviewScore, user_userID, movies_id) VALUES (?, ?, ?, ?, ?)`;
-		connection.query(sql, [title, content, score, user_id, movie_id], (error, results) => {
+	let sql = `INSERT INTO review(reviewTitle, reviewContent, reviewScore, movies_id) VALUES (?, ?, ?, ?)`;
+		connection.query(sql, [title, content, score, movie_id], (error, results) => {
 			connection.end();
 			if (error) {
 				return res.status(500).send(error.message);
 			}
 			return res.status(200).send();
 		})
-	})
 
 })
 
