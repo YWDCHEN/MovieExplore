@@ -26,7 +26,15 @@ function Home() {
     fetch(`/api/movies`)
       .then(res => res.json())
       .then(data => {
-        setMovies(data);
+        let temp_movies = [];
+        let temp_map = {};
+        for (let item of data) {
+          if (!temp_map[item.name]) {
+            temp_movies.push(item);
+            temp_map[item.name] = true;
+          }
+        }
+        setMovies(temp_movies);
       })
   }, []);
   const renderMovies = () => {
@@ -60,7 +68,7 @@ function Home() {
     })
   }
   return (
-    <Container style={{display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '40px'}}>
+    <Container style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
       <Typography variant={'h3'}>Movie Review Application</Typography>
       <Box width={'50%'}>
         <FormControl fullWidth variant="standard" sx={{ m: 1, minWidth: 120 }}>
