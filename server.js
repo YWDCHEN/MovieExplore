@@ -20,6 +20,7 @@ app.post('/api/reviews', async (req, res) => {
 		connection.query(sql, [title, content, score, movie_id], (error, results) => {
 			connection.end();
 			if (error) {
+				console.log(error);
 				return res.status(500).send(error.message);
 			}
 			return res.status(200).send();
